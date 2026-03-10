@@ -1,0 +1,125 @@
+﻿.btn-pink {
+    background-color: #ff69b4;
+    color: white;
+}
+.btn-pink:hover {
+        background-color: #ff4fa3;
+}
+body {
+    font-family: 'Poppins', Arial, sans-serif;
+    margin: 0;
+    background-color: #f8f9fa;
+}
+/* =========================
+   CONTENIDO
+   ========================= */
+.p-4.w-100 {
+    background-color: #f8f9fa;
+}
+
+/* =========================
+   LAYOUT ADMIN
+   ========================= */
+.sidebar {
+    min-height: 100vh;
+    background-color: #e83e8c;
+}
+.sidebar .nav-link {
+        color: #ffffff;
+        padding: 10px 15px;
+        border-radius: 8px;
+        margin-bottom: 6px;
+        font-weight: 500;
+}
+
+.sidebar .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+}
+
+.sidebar .nav-link.active {
+    background-color: #ffffff;
+    color: #e83e8c;
+    font-weight: 600;
+
+}
+
+/* Texto rosa */
+.text-pink {
+    color: #ff69b4;
+}
+
+/* =========================
+   CARDS
+   ========================= */
+.card {
+    border-radius: 12px;
+    border: none;
+}
+
+.card-body {
+    background-color: #ffffff;
+}
+
+/* =========================
+   BOTONES
+   ========================= */
+.btn-pink {
+    background-color: #e83e8c;
+    border-color: #e83e8c;
+    color: #fff;
+}
+
+    .btn-pink:hover {
+        background-color: #d63384;
+        border-color: #d63384;
+    }
+
+.btn-outline-pink {
+    color: #e83e8c;
+    border-color: #e83e8c;
+}
+
+    .btn-outline-pink:hover {
+        background-color: #e83e8c;
+        color: #fff;
+    }
+
+
+/* =========================
+   TABLAS
+   ========================= */
+.table {
+    background-color: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+    .table thead {
+        background-color: #fde2ef;
+    }
+
+    .table th {
+        color: #e83e8c;
+        font-weight: 600;
+    }
+
+.table-hover tbody tr:hover {
+    background-color: #fff0f6;
+}
+
+/* =========================
+   FORMULARIOS
+   ========================= */
+.form-control:focus,
+.form-select:focus {
+    border-color: #e83e8c;
+    box-shadow: 0 0 0 0.2rem rgba(232, 62, 140, 0.25);
+}
+/* =========================
+   COLORES / TEXTO
+   ========================= */
+.text-pink {
+    color: #e83e8c !important;
+}
+
+

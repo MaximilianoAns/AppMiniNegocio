@@ -28,9 +28,10 @@
 
                     <div class="card-body">
 
-                        <i class="bi bi-person-circle fs-1 text-primary"></i>
+                        <i class="bi bi-person-circle text-primary"
+                           style="font-size:90px"></i>
 
-                        <h5 class="mt-3 mb-0" id="perfil-nombre">Usuario</h5>
+                        <h5 class="mt-3 mb-1" id="perfil-nombre">Usuario</h5>
 
                         <p class="text-muted mb-1" id="perfil-email">
                             email@correo.com
@@ -48,13 +49,16 @@
 
                         <hr>
 
-                    </div>
+                        <button id="btnEditar" class="btn btn-outline-primary w-100">
+                            <i class="bi bi-pencil"></i> Editar datos
+                        </button>
 
+                    </div>
                 </div>
 
             </div>
 
-            <!-- INFORMACIÓN PERSONAL -->
+            <!-- FORMULARIO PERFIL -->
             <div class="col-md-8">
 
                 <div class="card shadow-sm">
@@ -65,41 +69,44 @@
 
                     <div class="card-body" id="perfilForm">
 
-                        <div class="mb-3">
-                            <label class="form-label">Nombre</label>
-                            <input type="text" id="nombre" class="form-control" disabled>
-                        </div>
+                        <div class="row">
 
-                        <div class="mb-3">
-                            <label class="form-label">Apellido</label>
-                            <input type="text" id="apellido" class="form-control" disabled>
-                        </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Nombre</label>
+                                <input type="text" id="nombre" class="form-control" disabled>
+                            </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Localidad</label>
-                            <input type="text" id="localidad" class="form-control" disabled>
-                        </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Apellido</label>
+                                <input type="text" id="apellido" class="form-control" disabled>
+                            </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Dirección</label>
-                            <input type="text" id="direccion" class="form-control" disabled>
-                        </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Localidad</label>
+                                <input type="text" id="localidad" class="form-control" disabled>
+                            </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Teléfono</label>
-                            <input type="text" id="telefono" class="form-control" disabled>
-                        </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Teléfono</label>
+                                <input type="text" id="telefono" class="form-control" disabled>
+                            </div>
 
-                       
+                            <div class="col-12 mb-3">
+                                <label class="form-label">Dirección</label>
+                                <input type="text" id="direccion" class="form-control" disabled>
+                            </div>
+
+                            <div class="col-12 mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="text" id="email" class="form-control" disabled>
+                            </div>
+
+                        </div>
 
                         <hr>
 
-                        <button id="btnEditar" class="btn btn-outline-primary">
-                            Editar datos
-                        </button>
-
                         <button id="btnGuardar" class="btn btn-success d-none">
-                            Guardar cambios
+                            <i class="bi bi-check-lg"></i> Guardar cambios
                         </button>
 
                         <button class="btn btn-outline-secondary ms-2">
@@ -113,7 +120,6 @@
 
         </div>
     </div>
-
     <script src="../Js/api.js"></script>
     <script src="../Js/auth-navbar.js"></script>
     <script src="../Js/perfil.js"></script>

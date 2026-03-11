@@ -12,9 +12,9 @@ namespace AppMiniNegocio.Models
         public decimal Total { get; set; }
         public EstadoVenta Estado { get; set; }
 
-        public string UsuarioId { get; set; }
-        public IdentityUser Usuario { get; set; }
+        public string UsuarioId { get; set; } = string.Empty;
+        public IdentityUser? Usuario { get; set; }
 
-        public List<DetalleVenta> Detalles { get; set; }
+        public List<DetalleVenta> Detalles { get; set; } = new();
     }
 }

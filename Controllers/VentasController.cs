@@ -160,6 +160,7 @@ namespace AppMiniNegocio.Controllers
         // ===============================
         // CAMBIAR ESTADO (CON VALIDACIÓN)
         // ===============================
+        [Authorize]
         [HttpPut("cambiar-estado/{id}")]
         public async Task<IActionResult> CambiarEstado(int id, EstadoVenta nuevoEstado)
         {

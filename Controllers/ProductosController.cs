@@ -1,6 +1,7 @@
 ﻿using AppMiniNegocio.Data;
 using AppMiniNegocio.Dtos;
 using AppMiniNegocio.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -53,6 +54,7 @@ namespace AppMiniNegocio.Controllers
         }
 
         // 🔹 POST: api/Productos
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<ProductoReadDto>> PostProducto(ProductoCreateDto dto)
         {
@@ -95,6 +97,7 @@ namespace AppMiniNegocio.Controllers
         }
 
         // 🔹 PUT: api/Productos/{id}
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutProducto(int id, ProductoUpdateDto dto)
         {
@@ -115,6 +118,7 @@ namespace AppMiniNegocio.Controllers
         }
 
         // 🔹 DELETE: api/Productos/{id}
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProducto(int id)
         {

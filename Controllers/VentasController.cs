@@ -3,10 +3,9 @@ using AppMiniNegocio.Dtos;
 using AppMiniNegocio.Models;
 using AppMiniNegocio.Models.Enum;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity; 
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
 
 namespace AppMiniNegocio.Controllers
 {
@@ -15,8 +14,7 @@ namespace AppMiniNegocio.Controllers
     public class VentasController : ControllerBase
     {
         private readonly AppDbContext _context;
-        private readonly UserManager<IdentityUser> _userManager; // PARA OBTENER USUARIO LOGUEADO
-
+        private readonly UserManager<IdentityUser> _userManager;
 
         public VentasController(AppDbContext context, UserManager<IdentityUser> userManager)
         {
@@ -25,52 +23,134 @@ namespace AppMiniNegocio.Controllers
         }
 
         // ===============================
-        // OBTENER VENTA POR ID
+        // OBTENER TODAS LAS VENTAS (admin)
         // ===============================
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Venta>> GetVenta(int id)
-        {
-            var venta = await _context.Ventas
-                .Include(v => v.Detalles)
-                    .ThenInclude(d => d.Producto)
-                .FirstOrDefaultAsync(v => v.Id == id);
-
-            if (venta == null)
-                return NotFound();
-
-            return venta;
-        }
-
-        // ===============================
-        // VENTAS POR FECHA (NO CANCELADAS)
-        // ===============================
-        [HttpGet("por-fecha")]
-        public async Task<IActionResult> VentasPorFecha(DateTime desde, DateTime hasta)
+        [HttpGet]
+        public async Task<IActionResult> GetVentas()
         {
             var ventas = await _context.Ventas
-                .Where(v => v.Fecha >= desde &&
-                            v.Fecha <= hasta &&
-                            v.Estado != EstadoVenta.Cancelada)
+                .Include(v => v.Combos)
+                    .ThenInclude(c => c.Gustos)
+                .Include(v => v.Usuario)
+                .OrderByDescending(v => v.Fecha)
+                .Select(v => new
+                {
+                    v.Id,
+                    v.Fecha,
+                    v.Total,
+                    Estado = v.Estado.ToString(),
+                    Usuario = v.Usuario != null ? v.Usuario.Email : "Sin usuario",
+                    Combos = v.Combos.Select(c => new
+                    {
+                        c.Peso,
+                        c.Cantidad,
+                        c.PrecioUnitario,
+                        c.Subtotal,
+                        Gustos = c.Gustos.Select(g => g.NombreGusto).ToList()
+                    }).ToList()
+                })
                 .ToListAsync();
 
             return Ok(ventas);
         }
 
         // ===============================
-        // TOTAL VENDIDO (SIN CANCELADAS)
+        // OBTENER VENTA POR ID
         // ===============================
-        [HttpGet("total")]
-        public async Task<IActionResult> TotalVendido()
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetVenta(int id)
         {
-            var total = await _context.Ventas
-                .Where(v => v.Estado != EstadoVenta.Cancelada)
-                .SumAsync(v => v.Total);
+            var venta = await _context.Ventas
+                .Include(v => v.Combos)
+                    .ThenInclude(c => c.Gustos)
+                .Include(v => v.Usuario)
+                .FirstOrDefaultAsync(v => v.Id == id);
 
-            return Ok(new { total });
+            if (venta == null)
+                return NotFound();
+
+            return Ok(new
+            {
+                venta.Id,
+                venta.Fecha,
+                venta.Total,
+                Estado = venta.Estado.ToString(),
+                Usuario = venta.Usuario != null ? venta.Usuario.Email : "Sin usuario",
+                Combos = venta.Combos.Select(c => new
+                {
+                    c.Peso,
+                    c.Cantidad,
+                    c.PrecioUnitario,
+                    c.Subtotal,
+                    Gustos = c.Gustos.Select(g => g.NombreGusto).ToList()
+                }).ToList()
+            });
         }
 
         // ===============================
-        // RESUMEN VENTAS (CON ESTADO)
+        // CREAR VENTA DESDE CARRITO (cliente)
+        // ===============================
+        [Authorize]
+        [HttpPost("desde-carrito")]
+        public async Task<IActionResult> CrearVentaDesdeCarrito(VentaComboCreateDto dto)
+        {
+            // 1 — Usuario logueado
+            var usuarioId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (usuarioId == null)
+                return Unauthorized("Usuario no autenticado");
+
+            // 2 — Validar que venga al menos un combo
+            if (dto == null || !dto.Combos.Any())
+                return BadRequest("El pedido debe tener al menos un combo.");
+
+            // 3 — Crear la venta
+            var venta = new Venta
+            {
+                Fecha = DateTime.Now,
+                Estado = EstadoVenta.Pendiente,
+                UsuarioId = usuarioId,
+                Combos = new List<VentaCombo>()
+            };
+
+            decimal total = 0;
+
+            // 4 — Procesar cada combo con sus gustos
+            foreach (var comboDto in dto.Combos)
+            {
+                var subtotal = comboDto.PrecioUnitario * comboDto.Cantidad;
+                total += subtotal;
+
+                var combo = new VentaCombo
+                {
+                    Peso = comboDto.Peso,
+                    Cantidad = comboDto.Cantidad,
+                    PrecioUnitario = comboDto.PrecioUnitario,
+                    Subtotal = subtotal,
+                    Gustos = comboDto.Gustos.Select(g => new VentaComboGusto
+                    {
+                        NombreGusto = g
+                    }).ToList()
+                };
+
+                venta.Combos.Add(combo);
+            }
+
+            venta.Total = total;
+
+            _context.Ventas.Add(venta);
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                venta.Id,
+                venta.Fecha,
+                venta.Total,
+                Estado = venta.Estado.ToString()
+            });
+        }
+
+        // ===============================
+        // RESUMEN VENTAS
         // ===============================
         [HttpGet("resumen")]
         public async Task<IActionResult> ResumenVentas()
@@ -89,188 +169,38 @@ namespace AppMiniNegocio.Controllers
         }
 
         // ===============================
-        // CREAR VENTA
+        // TOTAL VENDIDO
         // ===============================
-        [Authorize]
-        [HttpPost]
-        public async Task<IActionResult> CrearVenta(VentasCreateDto dto)
+        [HttpGet("total")]
+        public async Task<IActionResult> TotalVendido()
         {
-            // 1️ero OBTENER USUARIO LOGUEADO
-            //var usuario = await _userManager.GetUserAsync(User);
-            var usuario = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var total = await _context.Ventas
+                .Where(v => v.Estado != EstadoVenta.Cancelada)
+                .SumAsync(v => v.Total);
 
-            if (usuario == null)
-                return Unauthorized("Usuario no autenticado");
-
-            // 2️do VALIDAR DTO
-            if (dto == null || dto.Detalles == null || !dto.Detalles.Any())
-                return BadRequest("La venta debe tener al menos un producto.");
-
-            // 3️ero CREAR VENTA (UNA SOLA)
-            var venta = new Venta
-            {
-                Fecha = DateTime.Now,
-                Estado = EstadoVenta.Pendiente,   // siempre inicia pendiente
-                UsuarioId = usuario,           // 👈 clave
-                Detalles = new List<DetalleVenta>()
-            };
-
-            decimal total = 0;
-
-            // 4️to PROCESAR DETALLES
-            foreach (var d in dto.Detalles)
-            {
-                var producto = await _context.Productos
-                    .FirstOrDefaultAsync(p => p.Id == d.ProductoId);
-
-                if (producto == null)
-                    return BadRequest("Producto inexistente");
-
-                if (producto.Stock < d.Cantidad)
-                    return BadRequest("Stock insuficiente");
-
-                producto.Stock -= d.Cantidad;
-
-                venta.Detalles.Add(new DetalleVenta
-                {
-                    ProductoId = producto.Id,
-                    Cantidad = d.Cantidad,
-                    PrecioUnitario = producto.Precio
-                });
-
-                total += producto.Precio * d.Cantidad;
-            }
-
-            // 5️to TOTAL
-            venta.Total = total;
-
-            // 6️to GUARDAR
-            _context.Ventas.Add(venta);
-            await _context.SaveChangesAsync();
-
-            // 7️to RESPUESTA
-            return Ok(new
-            {
-                venta.Id,
-                venta.Fecha,
-                venta.Total,
-                venta.Estado
-            });
+            return Ok(new { total });
         }
+
         // ===============================
-        // CAMBIAR ESTADO (CON VALIDACIÓN)
+        // CAMBIAR ESTADO
         // ===============================
         [Authorize]
         [HttpPut("cambiar-estado/{id}")]
         public async Task<IActionResult> CambiarEstado(int id, EstadoVenta nuevoEstado)
         {
             var venta = await _context.Ventas.FindAsync(id);
-
             if (venta == null)
                 return NotFound();
 
-            // No permitir modificar si ya está entregada
             if (venta.Estado == EstadoVenta.Entregada)
                 return BadRequest("No se puede modificar una venta entregada.");
 
-            // No permitir retroceder estado
             if ((int)nuevoEstado < (int)venta.Estado)
                 return BadRequest("No se puede retroceder el estado.");
 
-            // Cancelar solo si no esta entregada
-            if (nuevoEstado == EstadoVenta.Cancelada &&
-                venta.Estado == EstadoVenta.Entregada)
-                return BadRequest("No se puede cancelar una venta entregada.");
-
             venta.Estado = nuevoEstado;
-
             await _context.SaveChangesAsync();
-
             return Ok(venta);
         }
-
-       
-
-
-
-
-
     }
 }
-
-
-        // ANULAR VENTA
-
-        /*[HttpPut("anular/{id}")]
-        public async Task<IActionResult> AnularVenta(int id)
-        {
-            var venta = await _context.Ventas
-                .Include(v => v.Detalles)
-                .ThenInclude(d => d.Producto)
-                .FirstOrDefaultAsync(v => v.Id == id);
-
-            if (venta == null)
-                return NotFound();
-
-            if (venta.Anulada)
-                return BadRequest("La venta ya está anulada");
-
-            // 🔄 DEVOLVER STOCK
-            foreach (var d in venta.Detalles)
-            {
-                d.Producto.Stock += d.Cantidad;
-            }
-
-            venta.Anulada = true;
-            // ❌ NO tocar venta.Total
-
-            await _context.SaveChangesAsync();
-
-            return Ok(new { mensaje = "Venta anulada correctamente" });
-        }
-
-        // Para NO mostrar anuladas
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Ventas>>> GetVentas()
-        {
-            return await _context.Ventas
-                .Where(v => !v.Anulada)
-                .Include(v => v.Detalles)
-                .ThenInclude(d => d.Producto)
-                .ToListAsync();
-        }
-
-            // GET: api/Ventas/{id}/detalle
-            [HttpGet("{id}/detalle")]
-            public async Task<IActionResult> GetDetalleVenta(int id)
-            {
-                var venta = await _context.Ventas
-                    .Include(v => v.Detalles)
-                        .ThenInclude(d => d.Producto)
-                    .FirstOrDefaultAsync(v => v.Id == id);
-
-                if (venta == null)
-                    return NotFound("Venta no encontrada");
-
-                var response = new
-                {
-                    venta.Id,
-                    venta.Fecha,
-                    venta.Total,
-                    venta.Anulada,
-                    Detalles = venta.Detalles.Select(d => new DetalleVentaDto
-                    {
-                        Producto = d.Producto?.Nombre ?? "(Producto eliminado)",
-                        Cantidad = d.Cantidad,
-                        PrecioUnitario = d.PrecioUnitario,
-                        Subtotal = d.Cantidad * d.PrecioUnitario
-                    }).ToList()
-                };
-
-                return Ok(response);
-            }*/
-
-    
-
-
-

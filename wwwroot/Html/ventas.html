@@ -1,126 +1,126 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="utf-8" />
-    <title>Ventas</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../css/admin.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ventas | Mala Candys Admin</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Pacifico&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../Css/admin.css">
 </head>
 <body>
 
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-    <div class="d-flex">
+<div class="admin-layout">
 
-        <!-- SIDEBAR -->
-        <div class="sidebar p-3" style="width:270px;">
-            <h4 class="text-white mb-4">🍭 Mala Candys</h4>
-
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a href="dashboard.html" class="nav-link">🏠 Dashboard</a>
-                </li>
-                <li class="nav-item">
-                    <a href="productos.html" class="nav-link">📦 Productos</a>
-                </li>
-                <li class="nav-item">
-                    <a href="ventas.html" class="nav-link active">📊 Ventas</a>
-                </li>
-                <li class="nav-item">
-                    <a href="compras.html" class="nav-link">🧾 Compras</a>
-                </li>
-                <li class="nav-item mt-4">
-                    <a href="login.html" class="nav-link text-danger bg-white">🚪 Salir</a>
-                </li>
-            </ul>
-        </div>
-
-
-
-        <!-- CONTENIDO -->
-        <div class="p-4 w-100">
-
-            <!-- HEADER -->
-            <div class="d-flex justify-content-between mb-3">
-                <h2 class="text-pink">Ventas</h2>
-                <button id="btnNuevaVenta" class="btn btn-pink">
-                    ➕ Nueva Venta
-                </button>
-            </div>
-
-            <!-- MINI FORMULARIO -->
-            <div id="formNuevaVenta" class="card shadow-sm mb-4 d-none">
-                <div class="card-body">
-
-                    <h5 class="mb-3">Nueva Venta</h5>
-
-                    <div class="row g-3 align-items-end mb-3">
-                        <div class="col-md-5">
-                            <label>Producto</label>
-                            <select id="selectProducto" class="form-select"></select>
-                        </div>
-
-                        <div class="col-md-3">
-                            <label>Cantidad</label>
-                            <input type="number" id="inputCantidad" class="form-control" min="1">
-                        </div>
-
-                        <!-- Mensaje de error -->
-                        <div class="invalid-feedback" id="errorStock"></div>
-
-                        <div class="col-md-4">
-                            <button id="btnAgregarProducto" class="btn btn-outline-pink w-100">
-                                ➕ Agregar
-                            </button>
-                        </div>
-                    </div>
-
-                    <table class="table table-sm table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Producto</th>
-                                <th>Cant.</th>
-                                <th>Precio</th>
-                                <th>Subtotal</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody id="detalleVentaBody"></tbody>
-                    </table>
-
-                    <div class="d-flex justify-content-between mt-3">
-                        <h5>Total: $ <span id="totalVenta">0</span></h5>
-
-                        <div>
-                            <button id="btnCancelarVenta" class="btn btn-secondary me-2">
-                                Cancelar
-                            </button>
-                            <button id="btnConfirmarVenta" class="btn btn-pink">
-                                💾 Confirmar
-                            </button>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-            <!-- TABLA VENTAS -->
-            <table class="table table-striped shadow">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Fecha</th>
-                        <th>Total</th>
-                        <th>Detalle</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="tblVentasBody"></tbody>
-            </table>
-
-        </div>
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-icon">🍭</span>
+      <div>
+        <div class="brand-text">Mala Candys</div>
+        <div class="brand-sub">Panel Admin</div>
+      </div>
     </div>
+    <ul class="sidebar-nav">
+      <li><span class="nav-label">Principal</span></li>
+      <li><a href="dashboard.html" class="nav-link"><span class="nav-icon">🏠</span><span class="nav-text">Dashboard</span></a></li>
+      <li><span class="nav-label">Gestión</span></li>
+      <li><a href="productos.html" class="nav-link"><span class="nav-icon">📦</span><span class="nav-text">Productos</span></a></li>
+      <li><a href="ventas.html"    class="nav-link active"><span class="nav-icon">📊</span><span class="nav-text">Ventas</span></a></li>
+      <li><a href="compras.html"   class="nav-link"><span class="nav-icon">🧾</span><span class="nav-text">Compras</span></a></li>
+      <li class="nav-exit mt-auto"><a href="login.html" class="nav-link"><span class="nav-icon">🚪</span><span class="nav-text">Salir</span></a></li>
+    </ul>
+  </aside>
 
-    <script src="../js/ventas.js"></script>
+  <!-- CONTENIDO -->
+  <div class="admin-content">
+
+    <header class="admin-topbar">
+      <div class="d-flex align-items-center gap-3">
+        <button class="btn-hamburger" id="btnHamburger">☰</button>
+        <span class="topbar-title">Ventas</span>
+      </div>
+      <div class="topbar-actions">
+        <a href="index.html" class="topbar-link">Ver sitio 🌐</a>
+        <div class="topbar-user">
+          <div class="topbar-avatar">A</div>
+          <span class="d-none d-sm-inline">Admin</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="admin-main">
+      <div class="page-header">
+        <h1 class="page-title">📊 <span>Ventas</span></h1>
+        <button id="btnNuevaVenta" class="btn btn-pink">➕ Nueva Venta</button>
+      </div>
+
+      <!-- FORMULARIO NUEVA VENTA -->
+      <div id="formNuevaVenta" class="card mb-4 d-none">
+        <div class="card-body p-4">
+          <h5 class="fw-800 mb-3" style="font-weight:800;color:#2d1b4e;">Nueva Venta</h5>
+
+          <div class="row g-3 align-items-end mb-3">
+            <div class="col-md-5">
+              <label class="form-label">Producto</label>
+              <select id="selectProducto" class="form-select"></select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Cantidad</label>
+              <input type="number" id="inputCantidad" class="form-control" min="1">
+            </div>
+            <div class="col-md-4">
+              <button id="btnAgregarProducto" class="btn btn-outline-pink w-100">➕ Agregar</button>
+            </div>
+            <div class="invalid-feedback" id="errorStock"></div>
+          </div>
+
+          <div class="table-wrapper mb-3">
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>Producto</th><th>Cant.</th><th>Precio</th><th>Subtotal</th><th></th>
+                </tr>
+              </thead>
+              <tbody id="detalleVentaBody"></tbody>
+            </table>
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="fw-800 m-0" style="font-weight:800;">Total: $<span id="totalVenta">0</span></h5>
+            <div class="d-flex gap-2">
+              <button id="btnCancelarVenta" class="btn btn-secondary">Cancelar</button>
+              <button id="btnConfirmarVenta" class="btn btn-pink">💾 Confirmar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TABLA VENTAS -->
+      <div class="table-wrapper">
+        <table class="table table-hover table-striped">
+          <thead>
+            <tr>
+              <th>ID</th><th>Fecha</th><th>Total</th><th>Detalle</th><th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tblVentasBody"></tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="../Js/ventas.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  const btn = document.getElementById('btnHamburger');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  btn.addEventListener('click', () => { sidebar.classList.toggle('open'); overlay.classList.toggle('active'); });
+  overlay.addEventListener('click', () => { sidebar.classList.remove('open'); overlay.classList.remove('active'); });
+</script>
 </body>
 </html>

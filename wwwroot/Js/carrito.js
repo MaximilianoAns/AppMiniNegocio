@@ -1,7 +1,5 @@
-﻿
-
-// ==============================
-// STORAGE PAGANIA DEL CARRITO CON DETALLES
+﻿// ==============================
+// STORAGE DEL CARRITO
 // ==============================
 function obtenerCarrito() {
     return JSON.parse(localStorage.getItem('carrito')) || [];
@@ -17,34 +15,31 @@ function guardarCarrito(carrito) {
 let carrito = obtenerCarrito();
 
 // ==============================
-// AGREGAR AL CARRITO (GLOBAL)
+// AGREGAR AL CARRITO
 // ==============================
 window.agregarAlCarrito = function (item) {
     carrito.push(item);
     guardarCarrito(carrito);
-
     renderCarrito();
     actualizarContadorCarrito();
 };
 
 // ==============================
-// ELIMINAR ITEM (GLOBAL)
+// ELIMINAR ITEM
 // ==============================
 window.eliminarItem = function (index) {
     carrito.splice(index, 1);
     guardarCarrito(carrito);
-
     renderCarrito();
     actualizarContadorCarrito();
 };
 
 // ==============================
-// VACIAR CARRITO (GLOBAL)
+// VACIAR CARRITO
 // ==============================
 window.vaciarCarrito = function () {
     carrito = [];
     guardarCarrito(carrito);
-
     renderCarrito();
     actualizarContadorCarrito();
 };
@@ -60,7 +55,7 @@ function renderCarrito() {
 
     if (carrito.length === 0) {
         contenedorCarrito.innerHTML = `
-            <p class="text-center text-muted">
+            <p class="text-center" style="color:var(--text-soft);font-weight:700;">
                 Tu carrito está vacío 🍬
             </p>
         `;
@@ -69,33 +64,33 @@ function renderCarrito() {
 
     carrito.forEach((item, index) => {
         const card = document.createElement('div');
-        card.className = 'card shadow-sm mb-2';
-
+        card.className = 'carrito-item';
         card.innerHTML = `
-            <div class="card-body">
-                <h5 class="card-title">Combo ${item.combo}gr</h5>
-                <ul class="mb-3">
-                    ${item.sabores.map(s => `<li>${s}</li>`).join('')}
-                </ul>
-                <button class="btn btn-sm btn-outline-danger" onclick="eliminarItem(${index})">
-                    ❌ Quitar
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <h5 style="font-weight:800;color:var(--text);margin-bottom:.5rem;">
+                        🫙 Combo ${item.combo}gr
+                    </h5>
+                    <ul style="margin:0;padding-left:1.25rem;color:var(--text-soft);font-size:.9rem;">
+                        ${item.sabores.map(s => `<li>${s}</li>`).join('')}
+                    </ul>
+                </div>
+                <button class="btn btn-outline-pink btn-sm" onclick="eliminarItem(${index})">
+                    🗑️ Quitar
                 </button>
             </div>
         `;
-
         contenedorCarrito.appendChild(card);
     });
 }
 
 // ==============================
-// CONTADOR DEL CARRITO
+// CONTADOR NAVBAR
 // ==============================
 function actualizarContadorCarrito() {
     const contador = document.getElementById('cartCount');
     if (!contador) return;
-
     contador.textContent = carrito.length;
-
     if (carrito.length > 0) {
         contador.classList.remove('d-none');
     } else {
@@ -106,37 +101,27 @@ function actualizarContadorCarrito() {
 // ==============================
 // BOTÓN VACIAR CARRITO
 // ==============================
-
-
 document.addEventListener('DOMContentLoaded', () => {
-
     const btnVaciar = document.getElementById('btnVaciarCarrito');
     const modalVaciar = document.getElementById('modalVaciar');
-    const cancelarVaciar = document.getElementById('btncancelarVaciar');
-    const confirmarVaciar = document.getElementById('btnconfirmarVaciar');
+    const cancelar = document.getElementById('btncancelarVaciar');
+    const confirmar = document.getElementById('btnconfirmarVaciar');
 
-    if (!btnVaciar || !modalVaciar || !cancelarVaciar || !confirmarVaciar) return;
+    if (!btnVaciar || !modalVaciar || !cancelar || !confirmar) return;
 
-    btnVaciar.addEventListener('click', () => {
-        modalVaciar.classList.add('activo');
-    });
-
-    cancelarVaciar.addEventListener('click', () => {
-        modalVaciar.classList.remove('activo');
-    });
-
-    confirmarVaciar.addEventListener('click', () => {
+    btnVaciar.addEventListener('click', () => modalVaciar.classList.add('activo'));
+    cancelar.addEventListener('click', () => modalVaciar.classList.remove('activo'));
+    confirmar.addEventListener('click', () => {
         vaciarCarrito();
         renderCarrito();
         modalVaciar.classList.remove('activo');
     });
-
 });
+
 // ==============================
-// FINALIZAR PEDIDO (WHATSAPP)
-
+// FINALIZAR PEDIDO
+// ==============================
 document.addEventListener('DOMContentLoaded', () => {
-
     const btnFinalizar = document.getElementById('btnFinalizar');
     const modal = document.getElementById('modalConfirmacion');
     const btnCancelar = document.getElementById('cancelarEnvio');
@@ -144,36 +129,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!btnFinalizar) return;
 
-    // =========================
-    // ABRIR MODAL
-    // =========================
+    // Abrir modal
     btnFinalizar.addEventListener('click', () => {
-
         const carrito = obtenerCarrito();
-
         if (!carrito || carrito.length === 0) {
             alert('El carrito está vacío');
             return;
         }
-
         modal.classList.add('activo');
     });
 
-    // =========================
-    // CANCELAR
-    // =========================
-    btnCancelar.addEventListener('click', () => {
-        modal.classList.remove('activo');
-    });
+    // Cancelar
+    btnCancelar.addEventListener('click', () => modal.classList.remove('activo'));
 
-    // =========================
-    // CONFIRMAR PEDIDO
-    // =========================
+    // Confirmar pedido
     btnConfirmar.addEventListener('click', async () => {
 
-        // 1️⃣ VALIDAR LOGIN
-        const token = localStorage.getItem("token");
+        // Feedback visual
+        btnConfirmar.disabled = true;
+        btnConfirmar.textContent = 'Enviando...';
 
+        // 1 — Verificar login
+        const token = localStorage.getItem("token");
         if (!token) {
             alert("Tenés que iniciar sesión para finalizar el pedido");
             window.location.href = "login.html";
@@ -181,44 +158,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const carrito = obtenerCarrito();
-
         if (!carrito || carrito.length === 0) {
             alert("El carrito está vacío");
             return;
         }
 
-        // =========================
-        // 2️⃣ ARMAR DTO PARA API
-        // =========================
-        // ⚠️ Esto es provisorio hasta que guardemos combos/gustos en tablas propias
+        // 2 — Armar DTO con combos y gustos
+        // Precios por peso (modificalos según tus precios reales)
+        const precios = { 650: 2500, 350: 1500, 200: 900 };
+
         const ventaDto = {
-            detalles: []
+            combos: carrito.map(item => ({
+                peso: item.combo,                        // 650, 350 o 200
+                cantidad: 1,
+                precioUnitario: precios[item.combo] || 0,
+                gustos: item.sabores                     // ["Ositos ácidos", "Moritas", ...]
+            }))
         };
 
-        carrito.forEach(item => {
-            // Si cada combo tiene productos internos
-            if (item.productos && Array.isArray(item.productos)) {
-                item.productos.forEach(p => {
-                    ventaDto.detalles.push({
-                        productoId: p.productoId,
-                        cantidad: p.cantidad
-                    });
-                });
-            }
-        });
-
-        if (ventaDto.detalles.length === 0) {
-            alert("No se pudieron generar los productos de la venta");
-            return;
-        }
-
-        // =========================
-        // 3️⃣ CREAR VENTA EN BACKEND
-        // =========================
+        // 3 — Registrar venta en el backend
         let ventaCreada;
-
         try {
-            const res = await fetch("https://localhost:7264/api/ventas", {
+            const res = await fetch("https://localhost:7264/api/Ventas/desde-carrito", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -228,7 +189,8 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (!res.ok) {
-                alert("Error al registrar la venta");
+                const msg = await res.text();
+                alert("Error al registrar la venta: " + msg);
                 return;
             }
 
@@ -237,41 +199,34 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error(error);
             alert("No se pudo conectar con el servidor");
+            btnConfirmar.disabled = false;
+            btnConfirmar.textContent = 'Sí, enviar';
             return;
         }
 
-        // =========================
-        // 4️⃣ ARMAR MENSAJE WHATSAPP
-        // =========================
-        let mensaje = `Hola Antonella! 👋\n\n`;
-        mensaje += `Quiero hacer un pedido.\n`;
+        // 4 — Armar mensaje WhatsApp con el detalle completo
+        let mensaje = `Hola Antonella! 🍭 Quiero hacer un pedido.\n`;
         mensaje += `Pedido N° ${ventaCreada.id}\n\n`;
 
         carrito.forEach(item => {
-            mensaje += `• Combo ${item.combo}gr\n`;
+            mensaje += `🫙 Combo ${item.combo}gr\n`;
             item.sabores.forEach(sabor => {
                 mensaje += `   - ${sabor}\n`;
             });
             mensaje += '\n';
         });
 
-        mensaje += 'Gracias! 😊';
+        mensaje += `Total: $${ventaCreada.total}\nGracias! 🍬`;
 
         const telefonoVendedor = '5491136371515';
         const url = `https://wa.me/${telefonoVendedor}?text=${encodeURIComponent(mensaje)}`;
 
-        // =========================
-        // 5️⃣ LIMPIEZA Y REDIRECCIÓN
-        // =========================
-        localStorage.setItem("pedidoEnviado", "true");
+        // 5 — Limpiar y redirigir
         vaciarCarrito();
-
         modal.classList.remove('activo');
-
         window.open(url, '_blank');
         window.location.href = "catalogoProductos.html";
     });
-
 });
 
 // ==============================

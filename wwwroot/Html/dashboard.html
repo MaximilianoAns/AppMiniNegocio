@@ -1,165 +1,198 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard | Mala Candys Admin</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Pacifico&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../Css/admin.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Mala Candys Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Pacifico&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../Css/admin.css">
+    <link rel="stylesheet" href="../Css/dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
-<!-- Overlay mobile -->
-<div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-<div class="admin-layout">
+    <div class="admin-layout">
 
-  <!-- ── SIDEBAR ── -->
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-brand">
-      <span class="brand-icon">🍭</span>
-      <div>
-        <div class="brand-text">Mala Candys</div>
-        <div class="brand-sub">Panel Admin</div>
-      </div>
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <span class="brand-icon">🍭</span>
+                <div>
+                    <div class="brand-text">Mala Candys</div>
+                    <div class="brand-sub">Panel Admin</div>
+                </div>
+            </div>
+            <ul class="sidebar-nav">
+                <li><span class="nav-label">Principal</span></li>
+                <li>
+                    <a href="dashboard.html" class="nav-link active">
+                        <span class="nav-icon">🏠</span>
+                        <span class="nav-text">Dashboard</span>
+                    </a>
+                </li>
+                <li><span class="nav-label">Gestión</span></li>
+                <li>
+                    <a href="productos.html" class="nav-link">
+                        <span class="nav-icon">📦</span>
+                        <span class="nav-text">Productos</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="ventas.html" class="nav-link">
+                        <span class="nav-icon">💰</span>
+                        <span class="nav-text">Ventas</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="compras.html" class="nav-link">
+                        <span class="nav-icon">🛍️</span>
+                        <span class="nav-text">Compras</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="combos.html" class="nav-link">
+                        <span class="nav-icon">🍬</span>
+                        <span class="nav-text">Combos</span>
+                    </a>
+                </li>
+                <li class="nav-exit mt-auto">
+                    <a href="login.html" class="nav-link" onclick="logout()">
+                        <span class="nav-icon">🚪</span>
+                        <span class="nav-text">Salir</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- CONTENIDO -->
+        <div class="admin-content">
+
+            <!-- TOPBAR -->
+            <header class="admin-topbar">
+                <div class="d-flex align-items-center gap-3">
+                    <button class="btn-hamburger" id="btnHamburger">☰</button>
+                    <span class="topbar-title">Dashboard</span>
+                </div>
+                <div class="topbar-actions">
+                    <a href="index.html" class="topbar-link">Ver sitio →</a>
+                    <div class="topbar-user">
+                        <div class="topbar-avatar">A</div>
+                        <span class="d-none d-sm-inline">Admin</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- MAIN -->
+            <main class="admin-main">
+
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">🍭 Bienvenida, <span>Antonella!</span></h1>
+                        <small class="text-muted fw-bold">Resumen general · Mala Candys</small>
+                    </div>
+                </div>
+
+                <!-- STAT CARDS -->
+                <div class="row g-3 mb-4">
+                    <div class="col-6 col-lg-3">
+                        <div class="stat-card pink">
+                            <div class="stat-accent"></div>
+                            <span class="stat-icon">💰</span>
+                            <div class="stat-value" id="statTotalVentas">...</div>
+                            <div class="stat-label">Total vendido</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <div class="stat-card violet">
+                            <div class="stat-accent"></div>
+                            <span class="stat-icon">🛒</span>
+                            <div class="stat-value" id="statPendientes">...</div>
+                            <div class="stat-label">Pedidos pendientes</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <div class="stat-card cyan">
+                            <div class="stat-accent"></div>
+                            <span class="stat-icon">🛍️</span>
+                            <div class="stat-value" id="statTotalCompras">...</div>
+                            <div class="stat-label">Total compras</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <div class="stat-card green">
+                            <div class="stat-accent"></div>
+                            <span class="stat-icon">📦</span>
+                            <div class="stat-value" id="statProductos">...</div>
+                            <div class="stat-label">Productos activos</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GRÁFICOS -->
+                <div class="row g-3 mb-4">
+
+                    <!-- BARRAS -->
+                    <div class="col-lg-7">
+                        <div class="card h-100">
+                            <div class="card-body p-4">
+                                <h5 style="font-weight:800;color:#2d1b4e;margin-bottom:1rem;">📈 Ventas últimos 7 días</h5>
+                                <div class="chart-wrap">
+                                    <canvas id="chartBarras"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DONA + TENDENCIA -->
+                    <div class="col-lg-5">
+                        <div class="card h-100">
+                            <div class="card-body p-4">
+                                <h5 style="font-weight:800;color:#2d1b4e;margin-bottom:1rem;">🍩 Estados de ventas</h5>
+                                <div class="donut-wrap">
+                                    <canvas id="chartDona"></canvas>
+                                </div>
+                                <hr class="divider">
+                                <div id="tendenciaEstados"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- TABLA ÚLTIMAS VENTAS -->
+                <div class="card">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 style="font-weight:800;color:#2d1b4e;margin:0;">🧾 Últimas ventas</h5>
+                            <a href="ventas.html" class="btn btn-outline-pink btn-sm">Ver todas →</a>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Fecha</th>
+                                        <th>Usuario</th>
+                                        <th>Total</th>
+                                        <th>Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbodyVentas">
+                                    <tr><td colspan="5" class="text-center py-3" style="color:#9b8ab8;">Cargando...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
     </div>
 
-    <ul class="sidebar-nav">
-      <li><span class="nav-label">Principal</span></li>
-      <li>
-        <a href="dashboard.html" class="nav-link active">
-          <span class="nav-icon">🏠</span>
-          <span class="nav-text">Dashboard</span>
-        </a>
-      </li>
-
-      <li><span class="nav-label">Gestión</span></li>
-      <li>
-        <a href="productos.html" class="nav-link">
-          <span class="nav-icon">📦</span>
-          <span class="nav-text">Productos</span>
-        </a>
-      </li>
-      <li>
-        <a href="ventas.html" class="nav-link">
-          <span class="nav-icon">📊</span>
-          <span class="nav-text">Ventas</span>
-        </a>
-      </li>
-      <li>
-        <a href="compras.html" class="nav-link">
-          <span class="nav-icon">🧾</span>
-          <span class="nav-text">Compras</span>
-        </a>
-      </li>
-
-      <li class="nav-exit mt-auto">
-        <a href="login.html" class="nav-link">
-          <span class="nav-icon">🚪</span>
-          <span class="nav-text">Salir</span>
-        </a>
-      </li>
-    </ul>
-  </aside>
-
-  <!-- ── CONTENIDO ── -->
-  <div class="admin-content">
-
-    <!-- TOPBAR -->
-    <header class="admin-topbar">
-      <div class="d-flex align-items-center gap-3">
-        <button class="btn-hamburger" id="btnHamburger">☰</button>
-        <span class="topbar-title">Panel de Administración</span>
-      </div>
-      <div class="topbar-actions">
-        <a href="index.html" class="topbar-link">Ver sitio 🌐</a>
-        <div class="topbar-user">
-          <div class="topbar-avatar">A</div>
-          <span class="d-none d-sm-inline">Admin</span>
-        </div>
-      </div>
-    </header>
-
-    <!-- MAIN -->
-    <main class="admin-main">
-
-      <div class="page-header">
-        <h1 class="page-title">¡Bienvenida Antonella, <span>Admin!</span> 🍬</h1>
-        <small class="text-muted fw-bold">Panel de control · Mala Candys</small>
-      </div>
-
-      <!-- CARDS -->
-      <div class="row g-3 mb-4">
-        <div class="col-6 col-lg-3">
-          <div class="stat-card pink">
-            <div class="stat-accent"></div>
-            <span class="stat-icon">💰</span>
-            <div class="stat-value">$0</div>
-            <div class="stat-label">Ventas del mes</div>
-          </div>
-        </div>
-        <div class="col-6 col-lg-3">
-          <div class="stat-card violet">
-            <div class="stat-accent"></div>
-            <span class="stat-icon">📦</span>
-            <div class="stat-value">0</div>
-            <div class="stat-label">Productos en stock</div>
-          </div>
-        </div>
-        <div class="col-6 col-lg-3">
-          <div class="stat-card cyan">
-            <div class="stat-accent"></div>
-            <span class="stat-icon">🧾</span>
-            <div class="stat-value">0</div>
-            <div class="stat-label">Compras registradas</div>
-          </div>
-        </div>
-        <div class="col-6 col-lg-3">
-          <div class="stat-card green">
-            <div class="stat-accent"></div>
-            <span class="stat-icon">🛒</span>
-            <div class="stat-value">0</div>
-            <div class="stat-label">Pedidos hoy</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ACCESOS RÁPIDOS -->
-      <div class="row g-3">
-        <div class="col-12">
-          <div class="card">
-            <div class="card-body p-4">
-              <h5 class="fw-800 mb-3" style="color:#2d1b4e;font-weight:800;">⚡ Accesos rápidos</h5>
-              <div class="d-flex flex-wrap gap-2">
-                <a href="productos.html" class="btn btn-pink">📦 Ver Productos</a>
-                <a href="ventas.html"   class="btn btn-pink">📊 Ver Ventas</a>
-                <a href="compras.html"  class="btn btn-pink">🧾 Ver Compras</a>
-                <a href="index.html"    class="btn btn-outline-pink">🌐 Ver Sitio</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </main>
-  </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-  const btn = document.getElementById('btnHamburger');
-  const sidebar = document.getElementById('sidebar');
-  const overlay = document.getElementById('sidebarOverlay');
-
-  btn.addEventListener('click', () => {
-    sidebar.classList.toggle('open');
-    overlay.classList.toggle('active');
-  });
-  overlay.addEventListener('click', () => {
-    sidebar.classList.remove('open');
-    overlay.classList.remove('active');
-  });
-</script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../Js/dashboard.js"></script>
 </body>
 </html>

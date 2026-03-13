@@ -1,4 +1,5 @@
 ﻿using AppMiniNegocio.Data;
+using AppMiniNegocio.Dtos;
 using AppMiniNegocio.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,38 +11,88 @@ namespace AppMiniNegocio.Controllers
     [ApiController]
     public class ComprasController : ControllerBase
     {
-        // Inyección de dependencia del contexto de la base de datos
         private readonly AppDbContext _context;
 
-        // Constructor para inicializar el contexto
         public ComprasController(AppDbContext context)
         {
             _context = context;
         }
+
         // GET: api/Compras
         [HttpGet]
         public async Task<IActionResult> GetCompras()
         {
-            return Ok(await _context.Compras.ToListAsync());
+            var compras = await _context.Compras
+                .Include(c => c.Detalles)
+                    .ThenInclude(d => d.Producto)
+                .OrderByDescending(c => c.Fecha)
+                .Select(c => new
+                {
+                    c.Id,
+                    c.Fecha,
+                    c.Total,
+                    Detalles = c.Detalles.Select(d => new
+                    {
+                        d.Id,
+                        d.ProductoId,
+                        ProductoNombre = d.Producto.Nombre,
+                        d.CantidadGramos,
+                        d.PrecioTotal
+                    }).ToList()
+                })
+                .ToListAsync();
+
+            return Ok(compras);
         }
 
         // POST: api/Compras
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> CrearCompra(Compras compra)
+        public async Task<IActionResult> CrearCompra(CompraCreateDto dto)
         {
-            if (compra == null)
-                return BadRequest("La compra no puede estar vacía");
+            if (dto == null || !dto.Detalles.Any())
+                return BadRequest("La compra debe tener al menos un producto.");
 
-            if (compra.Total <= 0)
-                return BadRequest("El total debe ser mayor a 0");
+            var compra = new Compras
+            {
+                Fecha = DateTime.Now,
+                Detalles = new List<DetalleCompra>()
+            };
 
-            
-            compra.Fecha = DateTime.Now; // Establecer la fecha actual al crear una compra
-            _context.Compras.Add(compra); // Agregar la compra al contexto
-            await _context.SaveChangesAsync(); // Guardar los cambios en la base de datos
-            return Ok(compra);
+            decimal total = 0;
+
+            foreach (var item in dto.Detalles)
+            {
+                // Validar que el producto existe
+                var producto = await _context.Productos.FindAsync(item.ProductoId);
+                if (producto == null)
+                    return BadRequest($"El producto con ID {item.ProductoId} no existe.");
+
+                total += item.PrecioTotal;
+
+                compra.Detalles.Add(new DetalleCompra
+                {
+                    ProductoId = item.ProductoId,
+                    CantidadGramos = item.CantidadGramos,
+                    PrecioTotal = item.PrecioTotal
+                });
+
+                // Sumar gramos al stock del producto
+                producto.Stock += item.CantidadGramos;
+            }
+
+            compra.Total = total;
+
+            _context.Compras.Add(compra);
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                compra.Id,
+                compra.Fecha,
+                compra.Total,
+                Detalles = compra.Detalles.Count
+            });
         }
     }
 }
-

@@ -1,5 +1,5 @@
 ﻿
-const contenedorCarrito = document.getElementById('contenedorCarrito');
+/*const contenedorCarrito = document.getElementById('contenedorCarrito');
 const btnVaciar = document.getElementById('btnVaciar');
 const btnFinalizar = document.getElementById('btnFinalizar');
 
@@ -66,4 +66,4 @@ btnFinalizar.addEventListener('click', () => {
     window.open(url, '_blank');
 });
 
-renderCarrito();
+renderCarrito();*/

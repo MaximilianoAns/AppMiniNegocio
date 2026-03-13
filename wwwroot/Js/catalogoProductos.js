@@ -1,4 +1,4 @@
-﻿// ==============================
+﻿// // ==============================
 // catalogoProductos.js
 // ==============================
 
@@ -15,7 +15,6 @@ if (modalCombo && btnAgregarCarrito && errorGustos) {
     // ==============================
     // CUANDO SE ABRE EL MODAL
     // ==============================
-    console.log("abrirCarrito:", abrirCarrito);
 
     modalCombo.addEventListener('show.bs.modal', (event) => {
         const button = event.relatedTarget;
@@ -120,4 +119,3 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.removeItem("pedidoEnviado");
     }
 });
-

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using static Azure.Core.HttpHeader;
 
 namespace AppMiniNegocio.Data
 {
@@ -16,6 +17,8 @@ namespace AppMiniNegocio.Data
 
             // pasamos a tener el DbSet de Compras para mostrar las compras en la base de datos            
             public DbSet<Compras> Compras { get; set; }
+
+            public DbSet<DetalleCompra> CompraDetalles { get; set; }
 
             // pasamos a tener el DbSet de Ventas para mostrar las compras en la base de datos
             public DbSet<Venta> Ventas { get; set; }
@@ -34,10 +37,12 @@ namespace AppMiniNegocio.Data
             // DbSet para el detalle de venta, que relaciona ventas con productos
             public DbSet<DetalleVenta> VentaDetalles { get; set; }
 
+            public DbSet<Combo> Combos { get; set; }
 
 
-       
-       
+
+
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -95,6 +100,29 @@ namespace AppMiniNegocio.Data
                 .Property(vc => vc.Subtotal)
                 .HasPrecision(18, 2);
 
+
+            // Relación Compras → CompraDetalle
+            modelBuilder.Entity<DetalleCompra>()
+                .HasOne(d => d.Compra)
+                .WithMany(c => c.Detalles)
+                .HasForeignKey(d => d.CompraId);
+
+            modelBuilder.Entity<DetalleCompra>()
+                .HasOne(d => d.Producto)
+                .WithMany()
+                .HasForeignKey(d => d.ProductoId);
+
+            modelBuilder.Entity<DetalleCompra>()
+                .Property(d => d.PrecioTotal)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<Compras>()
+                .Property(c => c.Total)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<Combo>()
+            .Property(c => c.Precio)
+            .HasPrecision(18, 2);
         }
     }
 }

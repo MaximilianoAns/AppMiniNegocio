@@ -1,0 +1,399 @@
+﻿/* =====================================================
+   🍭 MALA CANDYS — COMPRAS CSS
+   Estilos específicos de la página de compras
+   ===================================================== */
+
+/* ── PANEL NUEVA COMPRA ──────────────────────────────── */
+.panel-compra {
+    background: #fff;
+    border-radius: var(--radius);
+    border: 2px solid rgba(247,37,133,.15);
+    box-shadow: 0 8px 32px rgba(247,37,133,.15);
+    overflow: hidden;
+    margin-bottom: 1.25rem;
+    animation: slideDown .3s cubic-bezier(.4,0,.2,1);
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.panel-head {
+    background: linear-gradient(135deg, var(--candy-pink), var(--candy-violet));
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.panel-head-title {
+    color: #fff;
+    font-weight: 900;
+    font-size: 1rem;
+}
+
+.panel-head-close {
+    background: rgba(255,255,255,.2);
+    border: none;
+    color: #fff;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    font-size: .9rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background var(--transition);
+}
+
+    .panel-head-close:hover {
+        background: rgba(255,255,255,.35);
+    }
+
+.panel-body {
+    padding: 1.5rem;
+}
+
+.panel-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: .75rem;
+    margin-top: 1.25rem;
+}
+
+/* ── ETIQUETAS DE SECCIÓN ────────────────────────────── */
+.section-label {
+    font-size: .7rem;
+    font-weight: 800;
+    color: var(--candy-violet);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin-bottom: .5rem;
+    margin-top: 1rem;
+}
+
+    .section-label:first-child {
+        margin-top: 0;
+    }
+
+.compra-divider {
+    border: none;
+    height: 1.5px;
+    background: linear-gradient(90deg, rgba(247,37,133,.1), transparent);
+    margin: 1rem 0;
+}
+
+/* ── INPUTS CON SUFIJO / PREFIJO ─────────────────────── */
+.input-suffix {
+    position: relative;
+}
+
+    .input-suffix span {
+        position: absolute;
+        right: .75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: .75rem;
+        font-weight: 800;
+        color: var(--candy-violet);
+        pointer-events: none;
+    }
+
+    .input-suffix input {
+        padding-right: 2.5rem;
+    }
+
+.input-prefix {
+    position: relative;
+}
+
+    .input-prefix span {
+        position: absolute;
+        left: .75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: .82rem;
+        font-weight: 800;
+        color: var(--candy-violet);
+        pointer-events: none;
+    }
+
+    .input-prefix input {
+        padding-left: 1.5rem;
+    }
+
+/* ── BOTÓN AGREGAR ───────────────────────────────────── */
+.btn-agregar {
+    background: rgba(247,37,133,.1);
+    border: 2px solid rgba(247,37,133,.2);
+    color: var(--candy-pink);
+    font-weight: 800;
+    border-radius: 10px;
+    padding: .45rem 1rem;
+    cursor: pointer;
+    transition: all var(--transition);
+    font-size: .85rem;
+    white-space: nowrap;
+}
+
+    .btn-agregar:hover {
+        background: var(--candy-pink);
+        color: #fff;
+        border-color: var(--candy-pink);
+    }
+
+/* ── BOTÓN CANCELAR ──────────────────────────────────── */
+.btn-cancelar {
+    background: rgba(155,138,184,.1);
+    border: none;
+    color: var(--candy-violet);
+    font-weight: 700;
+    border-radius: 10px;
+    padding: .55rem 1.25rem;
+    cursor: pointer;
+    font-size: .9rem;
+    transition: background var(--transition);
+}
+
+    .btn-cancelar:hover {
+        background: rgba(155,138,184,.2);
+    }
+
+/* ── LISTA DE ITEMS ──────────────────────────────────── */
+.item-agregado {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fdf0ff;
+    border-radius: 10px;
+    padding: .65rem 1rem;
+    margin-bottom: .5rem;
+    border: 1.5px solid rgba(247,37,133,.1);
+    transition: border-color var(--transition);
+}
+
+    .item-agregado:hover {
+        border-color: rgba(247,37,133,.25);
+    }
+
+.item-nombre {
+    font-weight: 800;
+    flex: 1;
+    color: #2d1b4e;
+}
+
+.item-gr {
+    font-size: .82rem;
+    font-weight: 700;
+    color: var(--candy-violet);
+    background: rgba(114,9,183,.08);
+    border-radius: 20px;
+    padding: .2rem .6rem;
+    margin: 0 .75rem;
+    white-space: nowrap;
+}
+
+.item-precio {
+    font-weight: 800;
+    color: var(--candy-pink);
+    margin-right: .75rem;
+    white-space: nowrap;
+}
+
+.btn-quitar {
+    background: rgba(247,37,133,.1);
+    border: none;
+    color: var(--candy-pink);
+    border-radius: 6px;
+    padding: .2rem .5rem;
+    cursor: pointer;
+    font-size: .8rem;
+    font-weight: 800;
+    transition: all var(--transition);
+}
+
+    .btn-quitar:hover {
+        background: var(--candy-pink);
+        color: #fff;
+    }
+
+/* ── EMPTY MSG ───────────────────────────────────────── */
+.empty-msg {
+    text-align: center;
+    padding: 1.25rem;
+    color: var(--candy-violet);
+    font-weight: 700;
+    font-size: .88rem;
+    background: #fdf0ff;
+    border-radius: 10px;
+    border: 1.5px dashed rgba(247,37,133,.2);
+}
+
+/* ── TOTAL PREVIEW ───────────────────────────────────── */
+.total-preview {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: .85rem 1rem;
+    background: linear-gradient(90deg, rgba(247,37,133,.06), rgba(114,9,183,.04));
+    border-radius: 12px;
+    margin-top: .75rem;
+    font-weight: 800;
+    color: #9b8ab8;
+}
+
+    .total-preview span:last-child {
+        font-weight: 900;
+        color: var(--candy-pink);
+        font-size: 1.3rem;
+    }
+
+/* ── FILA EXPANDIBLE ─────────────────────────────────── */
+.fila-expand td {
+    background: #fdf0ff !important;
+    padding: 0 !important;
+    border-bottom: 2px solid rgba(247,37,133,.12) !important;
+}
+
+.expand-inner {
+    padding: 1.25rem 1.5rem;
+    border-top: 2px solid rgba(247,37,133,.1);
+    animation: fadeSlideDown .25s ease;
+}
+
+@keyframes fadeSlideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ── DETALLE ROWS ────────────────────────────────────── */
+.detalle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: .65rem .85rem;
+    background: #fff;
+    border-radius: 10px;
+    margin-bottom: .5rem;
+    border: 1.5px solid rgba(247,37,133,.08);
+    transition: border-color var(--transition);
+}
+
+    .detalle-row:hover {
+        border-color: rgba(247,37,133,.2);
+    }
+
+    .detalle-row:last-child {
+        margin-bottom: 0;
+    }
+
+.detalle-nombre {
+    font-weight: 800;
+    color: #2d1b4e;
+    flex: 1;
+}
+
+.detalle-gr {
+    font-size: .82rem;
+    font-weight: 700;
+    color: var(--candy-violet);
+    background: rgba(114,9,183,.08);
+    border-radius: 20px;
+    padding: .2rem .65rem;
+    margin: 0 .75rem;
+    white-space: nowrap;
+}
+
+.detalle-precio {
+    font-weight: 800;
+    color: var(--candy-pink);
+    white-space: nowrap;
+}
+
+/* ── TOTAL BAR ───────────────────────────────────────── */
+.total-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: .75rem 1rem;
+    background: linear-gradient(90deg, rgba(247,37,133,.06), rgba(114,9,183,.04));
+    border-radius: 10px;
+    margin-top: .75rem;
+}
+
+    .total-bar span:first-child {
+        font-weight: 800;
+        color: #9b8ab8;
+    }
+
+    .total-bar span:last-child {
+        font-weight: 900;
+        color: var(--candy-pink);
+        font-size: 1.1rem;
+    }
+
+/* ── PROD TAGS EN TABLA ──────────────────────────────── */
+.prod-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    background: #fdf0ff;
+    border: 1.5px solid rgba(247,37,133,.12);
+    border-radius: 10px;
+    padding: .3rem .65rem;
+    margin: .15rem;
+    font-size: .78rem;
+    font-weight: 700;
+    color: #2d1b4e;
+}
+
+.gr-pill {
+    background: rgba(114,9,183,.1);
+    color: var(--candy-violet);
+    border-radius: 20px;
+    padding: .1rem .5rem;
+    font-size: .72rem;
+    font-weight: 800;
+}
+
+/* ── BOTÓN VER ───────────────────────────────────────── */
+.btn-ver {
+    background: linear-gradient(135deg, var(--candy-pink), var(--candy-violet));
+    border: none;
+    color: #fff;
+    font-weight: 700;
+    border-radius: 8px;
+    padding: .35rem .85rem;
+    font-size: .8rem;
+    cursor: pointer;
+    transition: all var(--transition);
+}
+
+    .btn-ver:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(247,37,133,.3);
+    }
+
+    .btn-ver.abierto {
+        background: rgba(247,37,133,.1);
+        color: var(--candy-pink);
+        box-shadow: none;
+        transform: none;
+    }

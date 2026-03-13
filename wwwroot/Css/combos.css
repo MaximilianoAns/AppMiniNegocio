@@ -1,0 +1,216 @@
+﻿/* =====================================================
+   🍭 MALA CANDYS — COMBOS CSS
+   Estilos específicos de la página de combos
+   ===================================================== */
+
+/* ── PANEL COMBO ─────────────────────────────────────── */
+.panel-combo {
+    background: #fff;
+    border-radius: var(--radius);
+    border: 2px solid rgba(247,37,133,.15);
+    box-shadow: 0 8px 32px rgba(247,37,133,.15);
+    overflow: hidden;
+    margin-bottom: 1.25rem;
+    animation: slideDown .3s cubic-bezier(.4,0,.2,1);
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.panel-head {
+    background: linear-gradient(135deg, var(--candy-pink), var(--candy-violet));
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.panel-head-title {
+    color: #fff;
+    font-weight: 900;
+    font-size: 1rem;
+}
+
+.panel-head-close {
+    background: rgba(255,255,255,.2);
+    border: none;
+    color: #fff;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    font-size: .9rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background var(--transition);
+}
+
+    .panel-head-close:hover {
+        background: rgba(255,255,255,.35);
+    }
+
+.panel-body {
+    padding: 1.5rem;
+}
+
+.panel-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: .75rem;
+    margin-top: 1.25rem;
+}
+
+/* ── INPUTS CON SUFIJO / PREFIJO ─────────────────────── */
+.input-suffix {
+    position: relative;
+}
+
+    .input-suffix span {
+        position: absolute;
+        right: .75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: .75rem;
+        font-weight: 800;
+        color: var(--candy-violet);
+        pointer-events: none;
+    }
+
+    .input-suffix input {
+        padding-right: 2.5rem;
+    }
+
+.input-prefix {
+    position: relative;
+}
+
+    .input-prefix span {
+        position: absolute;
+        left: .75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: .82rem;
+        font-weight: 800;
+        color: var(--candy-violet);
+        pointer-events: none;
+    }
+
+    .input-prefix input {
+        padding-left: 1.5rem;
+    }
+
+/* ── BOTÓN CANCELAR ──────────────────────────────────── */
+.btn-cancelar-combo {
+    background: rgba(155,138,184,.1);
+    border: none;
+    color: var(--candy-violet);
+    font-weight: 700;
+    border-radius: 10px;
+    padding: .55rem 1.25rem;
+    cursor: pointer;
+    font-size: .9rem;
+    transition: background var(--transition);
+}
+
+    .btn-cancelar-combo:hover {
+        background: rgba(155,138,184,.2);
+    }
+
+/* ── PESO PILL ───────────────────────────────────────── */
+.peso-pill {
+    background: linear-gradient(135deg, var(--candy-pink), var(--candy-violet));
+    color: #fff;
+    border-radius: 10px;
+    padding: .35rem .85rem;
+    font-weight: 900;
+    font-size: .95rem;
+    display: inline-block;
+}
+
+/* ── BADGES ESTADO ───────────────────────────────────── */
+.badge-activo {
+    background: rgba(6,214,160,.15);
+    color: #047857;
+    padding: .3rem .75rem;
+    border-radius: 50px;
+    font-size: .72rem;
+    font-weight: 800;
+}
+
+.badge-inactivo {
+    background: rgba(247,37,133,.1);
+    color: var(--candy-pink);
+    padding: .3rem .75rem;
+    border-radius: 50px;
+    font-size: .72rem;
+    font-weight: 800;
+}
+
+/* ── BOTONES DE ACCIÓN ───────────────────────────────── */
+.btn-editar {
+    background: transparent;
+    border: 2px solid var(--candy-pink);
+    color: var(--candy-pink);
+    font-weight: 700;
+    border-radius: 8px;
+    padding: .35rem .85rem;
+    font-size: .8rem;
+    cursor: pointer;
+    transition: all var(--transition);
+}
+
+    .btn-editar:hover {
+        background: var(--candy-pink);
+        color: #fff;
+    }
+
+.btn-desactivar {
+    background: transparent;
+    border: 2px solid #ef4444;
+    color: #ef4444;
+    font-weight: 700;
+    border-radius: 8px;
+    padding: .35rem .85rem;
+    font-size: .8rem;
+    cursor: pointer;
+    transition: all var(--transition);
+}
+
+    .btn-desactivar:hover {
+        background: #ef4444;
+        color: #fff;
+    }
+
+.btn-activar {
+    background: rgba(6,214,160,.1);
+    border: 2px solid rgba(6,214,160,.3);
+    color: #047857;
+    font-weight: 700;
+    border-radius: 8px;
+    padding: .35rem .85rem;
+    font-size: .8rem;
+    cursor: pointer;
+    transition: all var(--transition);
+}
+
+    .btn-activar:hover {
+        background: #06d6a0;
+        color: #fff;
+        border-color: #06d6a0;
+    }
+
+/* ── FILA INACTIVA ───────────────────────────────────── */
+.fila-inactiva td {
+    opacity: .55;
+}

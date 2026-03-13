@@ -1,424 +1,241 @@
-﻿const API_URL = "https://localhost:7264/api";
+﻿const API = 'https://localhost:7264/api';
 
-detallesVenta = [];
-totalVenta = 0;
-renderDetalleVenta();
+let ventasData = [];
+let filaAbierta = null;
 
-// estas var las usamos para detectar el producto seleccionado 
-const selectProducto = document.getElementById("selectProducto");
-const inputCantidad = document.getElementById("inputCantidad");
+// ── Hamburguesa ──────────────────────────────────────
+document.getElementById('btnHamburger').addEventListener('click', () => {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebarOverlay').classList.toggle('active');
+});
+document.getElementById('sidebarOverlay').addEventListener('click', () => {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('active');
+});
 
-
-
-// =====================
-// CARGAR VENTAS
-// =====================
-async function cargarVentas() {
-    const res = await fetch(`${API_URL}/Ventas`);
-    const ventas = await res.json();
-
-    const tbody = document.getElementById("tblVentasBody");
-    tbody.innerHTML = "";
-
-    ventas.forEach(v => {
-        const tr = document.createElement("tr");
-
-        if (v.estado === "Cancelada") {
-            tr.className = "table-danger opacity-75";
-        }
-
-        tr.innerHTML = `
-            <td>${v.id}</td>
-            <td>${new Date(v.fecha).toLocaleDateString()}</td>
-            <td>$ ${v.total.toFixed(2)}</td>
-            <td>
-                <button class="btn btn-sm btn-info" title="Ver detalle" onclick="verDetalle(${v.id})"> 👁 Ver </button>
-            </td>
-            <td>innerHTML
-              <button class="btn btn-sm btn-danger"
-                    onclick="cambiarEstado(${v.id}, 'Cancelada')">
-                    🚫 Cancelar
-                </button>
-            </td>
-        `;
-
-        tbody.appendChild(tr);
-    });
-    activarTooltips();
-}
-// funcion para cambiar de color del estado de la venta
-function getBadgeColor(estado) {
-    switch (estado) {
-        case "Pendiente": return "bg-warning text-dark";
-        case "Confirmada": return "bg-primary";
-        case "EnPreparacion": return "bg-info text-dark";
-        case "Enviada": return "bg-secondary";
-        case "Entregada": return "bg-success";
-        case "Cancelada": return "bg-danger";
-        default: return "bg-dark";
-    }
-}
-// funcion para cambiar de estado la venta, se llama desde el boton cancelar venta
-async function cambiarEstado(id, nuevoEstado) {
-    await fetch(`${API_URL}/Ventas/cambiar-estado/${id}?nuevoEstado=${nuevoEstado}`, {
-        method: "PUT"
-    });
-
-    cargarVentas();
-}
-function verDetalle(id) {
-    console.log("ID enviado al detalle:", id);
-    window.location.href = `ventaDetalle.html?id=${id}`; // PASAMOS EL ID A LA PAGINA 
+// ── Logout ───────────────────────────────────────────
+function logout() {
+    localStorage.removeItem('token');
+    window.location.href = 'login.html';
 }
 
-
-
-// =====================
-// CARGAR PRODUCTOS
-// =====================
-async function cargarProductos() {
-    const select = document.getElementById("selectProducto");
-    if (!select) return;
-
-    try {
-        const res = await fetch(`${API_URL}/Productos`);
-        const productos = await res.json();
-
-        select.innerHTML = `<option value="">Seleccione producto</option>`;
-
-        productos
-            .filter(p => p.activo !== false && p.stock > 0) // VALIDAMOS QUE EL STOCK ESTE MAYOR A CERO
-            .forEach(p => { // P se crea dentro del for para hacer referencia a los productos
-                const option = document.createElement("option");
-                option.value = p.id;
-
-              // MOSTRAMOS EL STOCK DISPONIBLE
-                option.textContent =
-                    `${p.nombre} ($${p.precio}) - Stock: ${p.stock}`;
-
-                //guardamos info del producto directamente en el option
-                //, para usarla después, sin volver a llamar a la API.
-                option.value = p.id;
-                option.textContent = `${p.nombre} ($${p.precio}) - Stock: ${p.stock}`;
-                option.dataset.stock = p.stock;
-                option.dataset.precio = p.precio;
-
-                option.disabled = p.stock <= 0; // SI EL STOCK ES MENOR A CERO NO SE MUESTRA
-
-                select.appendChild(option);
-            });
-
-    } catch (err) {
-        console.error(err);
-        alert("No se pudieron cargar los productos");
-    }
+// ── Badge de estado ───────────────────────────────────
+function badgeEstado(estado) {
+    const clases = {
+        'Pendiente': 'badge-pendiente',
+        'Confirmada': 'badge-confirmada',
+        'EnPreparacion': 'badge-enpreparacion',
+        'Enviada': 'badge-enviada',
+        'Entregada': 'badge-entregada',
+        'Cancelada': 'badge-cancelada',
+    };
+    const labels = {
+        'Pendiente': 'Pendiente',
+        'Confirmada': 'Confirmada',
+        'EnPreparacion': 'En preparación',
+        'Enviada': 'Enviada',
+        'Entregada': 'Entregada',
+        'Cancelada': 'Cancelada',
+    };
+    const cls = clases[estado] || '';
+    return `<span class="badge-estado ${cls}">${labels[estado] || estado}</span>`;
 }
 
+// ── Render tabla ──────────────────────────────────────
+function renderTabla(ventas) {
+    const tbody = document.getElementById('tbodyVentas');
 
-
-
-// GUARDAR VENTA
-
-async function guardarVenta() {
-    const productoId = document.getElementById("productoId").value;
-    const cantidad = document.getElementById("cantidad").value;
-
-    if (!productoId || cantidad <= 0) {
-        alert("Seleccioná un producto y una cantidad válida");
+    if (ventas.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4" style="color:#9b8ab8;">No se encontraron ventas</td></tr>`;
         return;
     }
 
-    const venta = {
-        detalles: [{
-            productoId: Number(productoId),
-            cantidad: Number(cantidad)
-        }]
-    };
+    tbody.innerHTML = '';
+    filaAbierta = null;
 
-    const res = await fetch(`${API_URL}/Ventas`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(venta)
+    ventas.forEach(v => {
+        // Fila principal
+        const tr = document.createElement('tr');
+        tr.id = `fila-${v.id}`;
+        tr.innerHTML = `
+      <td><strong>#${v.id}</strong></td>
+      <td>${new Date(v.fecha).toLocaleDateString('es-AR')}</td>
+      <td style="font-size:.85rem;color:#9b8ab8;">${v.usuario || '-'}</td>
+      <td><strong style="color:#f72585;">$${(v.total || 0).toLocaleString('es-AR')}</strong></td>
+      <td>${badgeEstado(v.estado)}</td>
+      <td>
+        <button class="btn-detalle" onclick="toggleDetalle(${v.id})">
+          👁 Ver detalle
+        </button>
+      </td>
+    `;
+        tbody.appendChild(tr);
+
+        // Fila de detalle (oculta)
+        const trDetalle = document.createElement('tr');
+        trDetalle.id = `detalle-${v.id}`;
+        trDetalle.className = 'fila-expand';
+        trDetalle.style.display = 'none';
+        trDetalle.innerHTML = `
+      <td colspan="6">
+        <div class="expand-inner">
+
+          <div class="expand-header">
+            <span class="expand-title">🍬 Combos del pedido #${v.id}</span>
+            <span style="font-size:.82rem;color:#9b8ab8;font-weight:700;">${v.usuario || ''} · ${new Date(v.fecha).toLocaleDateString('es-AR')}</span>
+          </div>
+
+          ${v.combos && v.combos.length > 0
+                ? v.combos.map(c => `
+                <div class="combo-pill">
+                  <span class="combo-peso">${c.peso}gr</span>
+                  <div class="combo-gustos">
+                    ${c.gustos && c.gustos.length > 0
+                        ? c.gustos.map(g => `<span class="gusto-tag">${g}</span>`).join('')
+                        : '<span style="color:#9b8ab8;font-size:.82rem;">Sin gustos registrados</span>'
+                    }
+                  </div>
+                  <span class="combo-precio">$${(c.subtotal || 0).toLocaleString('es-AR')}</span>
+                </div>
+              `).join('')
+                : '<p style="color:#9b8ab8;font-size:.88rem;margin:0;">Sin combos registrados</p>'
+            }
+
+          <div class="estado-form">
+            <select class="form-select form-select-sm estado-select" id="selectEstado-${v.id}">
+              <option value="">Cambiar estado...</option>
+              <option value="Pendiente"     ${v.estado === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
+              <option value="Confirmada"    ${v.estado === 'Confirmada' ? 'selected' : ''}>Confirmada</option>
+              <option value="EnPreparacion" ${v.estado === 'EnPreparacion' ? 'selected' : ''}>En preparación</option>
+              <option value="Enviada"       ${v.estado === 'Enviada' ? 'selected' : ''}>Enviada</option>
+              <option value="Entregada"     ${v.estado === 'Entregada' ? 'selected' : ''}>Entregada</option>
+              <option value="Cancelada"     ${v.estado === 'Cancelada' ? 'selected' : ''}>Cancelada</option>
+            </select>
+            <button class="btn-guardar-estado" onclick="cambiarEstado(${v.id})">
+              💾 Guardar
+            </button>
+            ${v.estado === 'Entregada' || v.estado === 'Cancelada'
+                ? `<span style="font-size:.78rem;color:#9b8ab8;font-weight:700;">⚠️ Estado final, no se puede modificar</span>`
+                : ''
+            }
+          </div>
+
+        </div>
+      </td>
+    `;
+        tbody.appendChild(trDetalle);
     });
+}
 
-    if (res.ok) {
-        await cargarVentas();
-        document.getElementById("cantidad").value = "";
+// ── Toggle expandir fila ──────────────────────────────
+function toggleDetalle(id) {
+    const filaDetalle = document.getElementById(`detalle-${id}`);
+    const btn = document.querySelector(`#fila-${id} .btn-detalle`);
+    const visible = filaDetalle.style.display !== 'none';
+
+    // Cerrar la fila que estaba abierta antes
+    if (filaAbierta && filaAbierta !== id) {
+        const otraFila = document.getElementById(`detalle-${filaAbierta}`);
+        const otroBtn = document.querySelector(`#fila-${filaAbierta} .btn-detalle`);
+        if (otraFila) otraFila.style.display = 'none';
+        if (otroBtn) { otroBtn.textContent = '👁 Ver detalle'; otroBtn.classList.remove('abierto'); }
+    }
+
+    if (visible) {
+        filaDetalle.style.display = 'none';
+        btn.textContent = '👁 Ver detalle';
+        btn.classList.remove('abierto');
+        filaAbierta = null;
     } else {
-        const msg = await res.text();
-        alert(msg);
+        filaDetalle.style.display = 'table-row';
+        btn.textContent = '🔼 Cerrar';
+        btn.classList.add('abierto');
+        filaAbierta = id;
     }
 }
 
+// ── Cambiar estado ────────────────────────────────────
+async function cambiarEstado(id) {
+    const select = document.getElementById(`selectEstado-${id}`);
+    const nuevoEstado = select.value;
 
-// ACCIONES
+    if (!nuevoEstado) {
+        alert('Seleccioná un estado');
+        return;
+    }
 
+    const token = localStorage.getItem('token');
+    if (!token) {
+        alert('Sesión expirada, volvé a iniciar sesión');
+        window.location.href = 'login.html';
+        return;
+    }
 
-function confirmarAnular(id) {
-    if (!confirm("¿Seguro que querés anular esta venta?")) return;
-
-    fetch(`${API_URL}/Ventas/anular/${id}`, { method: "PUT" })
-        .then(() => cargarVentas());
-    window.location.reload();
-}
-
-document.getElementById("btnNuevaVenta")
-    .addEventListener("click", () => {
-
-        const select = document.getElementById("productoId");
-        const cantidadInput = document.getElementById("cantidad");
-
-        const productoId = Number(select.value);
-        const cantidad = Number(cantidadInput.value);
-
-        if (!productoId || cantidad <= 0) {
-            alert("Seleccioná un producto y una cantidad válida");
-            return;
-        }
-
-        const nombre = select.options[select.selectedIndex].text;
-        const precio = Number(
-            select.options[select.selectedIndex].text
-                .match(/\$(\d+(\.\d+)?)/)[1]
-        );
-
-        const subtotal = precio * cantidad;
-
-        detallesVenta.push({
-            productoId,
-            cantidad,
-            precio,
-            nombre
-        });
-
-        totalVenta += subtotal;
-
-        renderDetalleVenta();
-        cantidadInput.value = "";
-    });
-
-    // RENDERIZAMOS LA TABLA DETALLE 
-function renderDetalleVenta() {
-    const tbody = document.getElementById("detalleVentaBody");
-    tbody.innerHTML = "";
-
-    detallesVenta.forEach((d, index) => {
-        const subtotal = d.precio * d.cantidad;
-
-        tbody.innerHTML += `
-            <tr>
-                <td>${d.nombre}</td>
-                <td>${d.cantidad}</td>
-                <td>$${d.precio.toFixed(2)}</td>
-                <td>$${subtotal.toFixed(2)}</td>
-                <td>
-                    <button class="btn btn-sm btn-danger"
-                        onclick="eliminarDetalle(${index})">
-                        ✖
-                    </button>
-                </td>
-            </tr>
-        `;
-    });
-
-    document.getElementById("totalVenta").textContent =
-        totalVenta.toFixed(2);
-}
- // ELIMINAR PRODUCTO DETALLEM
-function eliminarDetalle(index) {
-    const d = detallesVenta[index];
-    totalVenta -= d.precio * d.cantidad;
-    detallesVenta.splice(index, 1);
-    renderDetalleVenta();
-}
-// CONFIRMAR VENTA POST
-document.getElementById("btnConfirmarVenta")
-    .addEventListener("click", async () => {
-
-        if (detallesVenta.length === 0) {
-            alert("La venta no tiene productos");
-            return;
-        }
-
-        const venta = {
-            detalles: detallesVenta.map(d => ({
-                productoId: d.productoId,
-                cantidad: d.cantidad
-            }))
-        };
-
-        const res = await fetch(`${API_URL}/Ventas`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(venta)
+    try {
+        const res = await fetch(`${API}/Ventas/cambiar-estado/${id}?nuevoEstado=${nuevoEstado}`, {
+            method: 'PUT',
+            headers: { 'Authorization': `Bearer ${token}` }
         });
 
         if (!res.ok) {
             const msg = await res.text();
-            alert(msg);
+            alert(msg || 'No se pudo cambiar el estado');
             return;
         }
 
-        // RESET
-        detallesVenta = [];
-        totalVenta = 0;
-        renderDetalleVenta();
-        cargarVentas();
+        // Actualizar dato local y re-renderizar
+        const venta = ventasData.find(v => v.id === id);
+        if (venta) venta.estado = nuevoEstado;
 
-        document
-            .getElementById("formNuevaVenta")
-            .classList.add("d-none");
+        renderTabla(ventasData);
+        // Volver a abrir la fila
+        toggleDetalle(id);
 
-        alert("Venta registrada correctamente");
-
-        // 🔄 RECARGA LA PÁGINA → vuelve a pedir productos y stock actualizado
-
-        window.location.reload();
-    });
-
-
-document.addEventListener("DOMContentLoaded", () => {
-
-    const btnNuevaVenta = document.getElementById("btnNuevaVenta");
-    const formNuevaVenta = document.getElementById("formNuevaVenta");
-    const btnCancelarVenta = document.getElementById("btnCancelarVenta");
-
-    // ABRIR FORMULARIO
-    btnNuevaVenta.addEventListener("click", () => {
-        formNuevaVenta.classList.remove("d-none");
-
-        // reset venta
-        detallesVenta = [];
-        totalVenta = 0;
-        renderDetalleVenta();
-    });
-
-    // CANCELAR VENTA
-    btnCancelarVenta.addEventListener("click", () => {
-        formNuevaVenta.classList.add("d-none");
-
-        detallesVenta = [];
-        totalVenta = 0;
-        renderDetalleVenta();
-    });
-});
-
-document.getElementById("btnAgregarProducto")
-    .addEventListener("click", () => {
-
-        const select = document.getElementById("selectProducto");
-        const cantidadInput = document.getElementById("inputCantidad");
-
-        if (!select || !cantidadInput) {
-            console.error("Elementos no encontrados");
-            return;
-        }
-
-        const productoId = Number(select.value);
-        const cantidad = Number(cantidadInput.value);
-
-        if (!productoId || cantidad <= 0) {
-            alert("Seleccioná un producto y una cantidad válida");
-            return;
-        }
-
-        if (cantidad > stock) {
-            alert("No hay stock suficiente");
-            return;
-        }
-        
-
-
-        const option = select.selectedOptions[0];
-        const texto = option.textContent;
-
-        // Extraer precio del texto ($1234)
-        const matchPrecio = texto.match(/\$(\d+(\.\d+)?)/);
-        if (!matchPrecio) {
-            alert("No se pudo obtener el precio del producto");
-            return;
-        }
-
-
-
-        const precio = Number(matchPrecio[1]);
-        const nombre = texto.split(" ($")[0];
-
-        // validamos para no duplicar los productos
-        const existente = detallesVenta.find(d => d.productoId === productoId);
-
-        if (existente) {
-            existente.cantidad += cantidad; // sumamos cantidad al producto y no duplicamos
-        } else {
-            detallesVenta.push({
-                productoId,
-                nombre,
-                precio,
-                cantidad
-            });
-        }
-        // simula el consumo dentro de la venta 
-        option.dataset.stock -= cantidad;
-        option.textContent = `${nombre} ($${precio}) - Stock: ${option.dataset.stock}`;
-
-        totalVenta += precio * cantidad;
-        renderDetalleVenta();
-
-        cantidadInput.value = "";
-    });
-
-
-document.addEventListener("DOMContentLoaded", () => {
-    cargarVentas();
-    cargarProductos();
-
-    const btnGuardarVenta = document.getElementById("btnGuardarVenta");
-    if (btnGuardarVenta) {
-        btnGuardarVenta.addEventListener("click", guardarVenta);
+    } catch (err) {
+        console.error(err);
+        alert('Error al conectar con el servidor');
     }
-});
-
-
-// Actualiza el máximo permitido en el input cantidad
-selectProducto.addEventListener("change", () => {
-    const option = selectProducto.selectedOptions[0]; // obtenemos el prod seleccionado
-
-    if (!option || !option.dataset.stock) return; //validamos 
-
-    const stock = parseInt(option.dataset.stock); // convertimos stock a numero 
-    inputCantidad.max = stock; // establece el permitido 
-
-    console.log("Stock disponible:", stock);
-});
-
-
-// Cada vez que el usuario escribe o cambia la cantidad.
-inputCantidad.addEventListener("input", () => {
-    const option = selectProducto.selectedOptions[0]; // obtenemos el prod seleccionado 
-    if (!option) return; // validamos si no hacemos nada
-
-    const stock = parseInt(option.dataset.stock); // obtenemos stock y cantidad
-    const cantidad = parseInt(inputCantidad.value);
-
-    if (cantidad > stock) { // validamos
-        inputCantidad.classList.add("is-invalid");
-    } else {
-        inputCantidad.classList.remove("is-invalid");
-    }
-});
-
-// para mostrar error al cargar mas cantidad que el stock
-const errorStock = document.getElementById("errorStock");
-
-if (cantidad > stock) {
-    inputCantidad.classList.add("is-invalid");
-    errorStock.textContent = `Stock disponible: ${stock}`;
-} else {
-    inputCantidad.classList.remove("is-invalid");
-    errorStock.textContent = "";
 }
 
+// ── Filtros ───────────────────────────────────────────
+function aplicarFiltros() {
+    const buscar = document.getElementById('inputBuscar').value.toLowerCase();
+    const estado = document.getElementById('filtroEstado').value;
 
+    const filtradas = ventasData.filter(v => {
+        const matchBuscar = !buscar ||
+            String(v.id).includes(buscar) ||
+            (v.usuario || '').toLowerCase().includes(buscar);
+        const matchEstado = !estado || v.estado === estado;
+        return matchBuscar && matchEstado;
+    });
 
+    renderTabla(filtradas);
+}
 
+function limpiarFiltros() {
+    document.getElementById('inputBuscar').value = '';
+    document.getElementById('filtroEstado').value = '';
+    renderTabla(ventasData);
+}
 
+// ── Cargar ventas ─────────────────────────────────────
+async function cargarVentas() {
+    try {
+        const res = await fetch(`${API}/Ventas`);
+        ventasData = await res.json();
+        renderTabla(ventasData);
+    } catch (err) {
+        console.error(err);
+        document.getElementById('tbodyVentas').innerHTML =
+            `<tr><td colspan="6" class="text-center py-4" style="color:#f72585;">No se pudo conectar con el servidor</td></tr>`;
+    }
+}
+
+// ── Enter en el buscador ──────────────────────────────
+document.getElementById('inputBuscar').addEventListener('keydown', e => {
+    if (e.key === 'Enter') aplicarFiltros();
+});
+
+// ── Init ──────────────────────────────────────────────
+cargarVentas();

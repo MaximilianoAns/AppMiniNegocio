@@ -54,7 +54,7 @@ namespace AppMiniNegocio.Controllers
         }
 
         // 🔹 POST: api/Productos
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<ActionResult<ProductoReadDto>> PostProducto(ProductoCreateDto dto)
         {
@@ -97,7 +97,7 @@ namespace AppMiniNegocio.Controllers
         }
 
         // 🔹 PUT: api/Productos/{id}
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutProducto(int id, ProductoUpdateDto dto)
         {
@@ -118,7 +118,7 @@ namespace AppMiniNegocio.Controllers
         }
 
         // 🔹 DELETE: api/Productos/{id}
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProducto(int id)
         {

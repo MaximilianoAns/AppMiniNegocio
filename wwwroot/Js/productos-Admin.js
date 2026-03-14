@@ -53,7 +53,7 @@ async function cargarProductos() {
         `;
     });
     // funcion para llamar a la etiqueta cuando se marca en el puntero de la accion
-    activarTooltips(); 
+    activarTooltips();
 
 }
 function confirmarEliminar(id, nombre) {
@@ -78,8 +78,10 @@ document.getElementById("btnConfirmDelete")
 
         if (!productoAEliminar) return;
 
+        const token = localStorage.getItem('token');
         await fetch(`${API_URL}/${productoAEliminar}`, {
-            method: "DELETE"
+            method: "DELETE",
+            headers: { 'Authorization': `Bearer ${token}` }
         });
 
         productoAEliminar = null;
@@ -155,14 +157,20 @@ async function guardarProducto() {
             // ✏️ EDITAR
             response = await fetch(`${API_URL}/${id}`, {
                 method: "PUT",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem('token')}`
+                },
                 body: JSON.stringify(producto)
             });
         } else {
             // ➕ NUEVO
             response = await fetch(API_URL, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem('token')}`
+                },
                 body: JSON.stringify(producto)
             });
         }
@@ -179,7 +187,7 @@ async function guardarProducto() {
         cargarProductos();
 
     } catch (err) {
-        mostrarError("No se pudo guardar el producto");
+        mostrarError("¡No se pudo guardar el producto!");
         console.error(err);
     }
 }

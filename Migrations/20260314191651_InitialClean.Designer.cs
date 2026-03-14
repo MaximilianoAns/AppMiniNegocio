@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppMiniNegocio.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260313193024_AgregaCombos")]
-    partial class AgregaCombos
+    [Migration("20260314191651_InitialClean")]
+    partial class InitialClean
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

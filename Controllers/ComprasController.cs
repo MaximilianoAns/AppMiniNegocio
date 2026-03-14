@@ -46,7 +46,7 @@ namespace AppMiniNegocio.Controllers
         }
 
         // POST: api/Compras
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> CrearCompra(CompraCreateDto dto)
         {

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace AppMiniNegocio.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialIdentityClean : Migration
+    public partial class InitialClean : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -48,6 +48,22 @@ namespace AppMiniNegocio.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Combos",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Peso = table.Column<int>(type: "int", nullable: false),
+                    Precio = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    MinimoGustos = table.Column<int>(type: "int", nullable: false),
+                    Activo = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Combos", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -232,6 +248,34 @@ namespace AppMiniNegocio.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "CompraDetalles",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CompraId = table.Column<int>(type: "int", nullable: false),
+                    ProductoId = table.Column<int>(type: "int", nullable: false),
+                    CantidadGramos = table.Column<int>(type: "int", nullable: false),
+                    PrecioTotal = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CompraDetalles", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CompraDetalles_Compras_CompraId",
+                        column: x => x.CompraId,
+                        principalTable: "Compras",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CompraDetalles_Productos_ProductoId",
+                        column: x => x.ProductoId,
+                        principalTable: "Productos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "VentaCombos",
                 columns: table => new
                 {
@@ -348,6 +392,16 @@ namespace AppMiniNegocio.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_CompraDetalles_CompraId",
+                table: "CompraDetalles",
+                column: "CompraId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CompraDetalles_ProductoId",
+                table: "CompraDetalles",
+                column: "ProductoId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_VentaComboGustos_VentaComboId",
                 table: "VentaComboGustos",
                 column: "VentaComboId");
@@ -395,7 +449,10 @@ namespace AppMiniNegocio.Migrations
                 name: "Clientes");
 
             migrationBuilder.DropTable(
-                name: "Compras");
+                name: "Combos");
+
+            migrationBuilder.DropTable(
+                name: "CompraDetalles");
 
             migrationBuilder.DropTable(
                 name: "VentaComboGustos");
@@ -405,6 +462,9 @@ namespace AppMiniNegocio.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Compras");
 
             migrationBuilder.DropTable(
                 name: "VentaCombos");

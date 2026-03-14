@@ -23,7 +23,7 @@ namespace AppMiniNegocio.Controllers
         }
 
         // ===============================
-        // OBTENER TODAS LAS VENTAS (admin)
+        // OBTENER TODAS LAS VENTAS
         // ===============================
         [HttpGet]
         public async Task<IActionResult> GetVentas()
@@ -184,7 +184,7 @@ namespace AppMiniNegocio.Controllers
         // ===============================
         // CAMBIAR ESTADO
         // ===============================
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpPut("cambiar-estado/{id}")]
         public async Task<IActionResult> CambiarEstado(int id, EstadoVenta nuevoEstado)
         {

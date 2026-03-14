@@ -41,7 +41,7 @@ namespace AppMiniNegocio.Controllers
         }
 
         // POST: api/Combos — crear nuevo combo (solo admin)
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> CrearCombo(ComboCreateDto dto)
         {
@@ -73,7 +73,7 @@ namespace AppMiniNegocio.Controllers
         }
 
         // PUT: api/Combos/{id} — editar precio, mínimo gustos y estado (solo admin)
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> EditarCombo(int id, ComboUpdateDto dto)
         {
@@ -96,7 +96,7 @@ namespace AppMiniNegocio.Controllers
         }
 
         // PATCH: api/Combos/{id}/toggle — activar o desactivar (solo admin)
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpPatch("{id}/toggle")]
         public async Task<IActionResult> ToggleActivo(int id)
         {

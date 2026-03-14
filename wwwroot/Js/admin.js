@@ -1,4 +1,4 @@
-﻿function login() {
+﻿/*function login() {
     const user = document.getElementById("user").value;
     const pass = document.getElementById("pass").value;
 
@@ -9,7 +9,8 @@
     } else {
         alert("Credenciales incorrectas");
     }
-}
+
+}*/
 // funcion para poner cartelitos en el puntero ante una accion
 function activarTooltips() {
     const tooltipTriggerList = [].slice.call(
